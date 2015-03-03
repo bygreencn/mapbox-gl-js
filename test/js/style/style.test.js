@@ -73,10 +73,15 @@ test('Style#_resolve', function(t) {
     t.test('creates StyleLayers', function(t) {
         var style = new Style({
             "version": 7,
-            "sources": {},
+            "sources": {
+                "foo": {
+                    "type": "vector"
+                }
+            },
             "layers": [{
-                id: 'fill',
-                type: 'fill'
+                id: "fill",
+                source: "foo",
+                type: "fill"
             }]
         });
 
@@ -89,13 +94,18 @@ test('Style#_resolve', function(t) {
     t.test('handles ref layer preceding referent', function(t) {
         var style = new Style({
             "version": 7,
-            "sources": {},
+            "sources": {
+                "foo": {
+                    "type": "vector"
+                }
+            },
             "layers": [{
-                id: 'ref',
-                ref: 'referent'
+                id: "ref",
+                ref: "referent"
             }, {
-                id: 'referent',
-                type: 'fill'
+                id: "referent",
+                source: "foo",
+                type: "fill"
             }]
         });
 
@@ -439,8 +449,14 @@ test('Style#setPaintProperty', function(t) {
     t.test('sets property', function(t) {
         var style = new Style({
             "version": 7,
+            "sources": {
+                "foo": {
+                    "type": "vector"
+                }
+            },
             "layers": [{
                 "id": "background",
+                "source": "foo",
                 "type": "background"
             }]
         });
@@ -472,8 +488,7 @@ test('Style#featuresAt', function(t) {
             },
             "paint": {
                 "line-color": "red"
-            },
-            "something": "else"
+            }
         }, {
             "id": "landref",
             "ref": "land",
@@ -555,17 +570,6 @@ test('Style#featuresAt', function(t) {
                 t.deepEqual(layer.type, refLayer.type);
                 t.deepEqual(layer.id, refLayer.ref);
                 t.notEqual(layer.paint, refLayer.paint);
-
-                t.end();
-            });
-        });
-
-        t.test('includes arbitrary keys', function(t) {
-            style.featuresAt([256, 256], {}, function(err, results) {
-                t.error(err);
-
-                var layer = results[0].layer;
-                t.equal(layer.something, 'else');
 
                 t.end();
             });
